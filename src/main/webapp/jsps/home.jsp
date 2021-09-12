@@ -31,7 +31,7 @@ out.println("Server Host Name :: "+inetAddress.getHostName());
 	</span>
 	<span style="font-weight: bold;">
 		Saptagiri Technologies, 
-		Martha Halli, Above ICICI Bank, Beside Meghana Foods,
+		Martha Halli, 
 		Bangalore,
 		+91 9951778708
 		saptagiri.yadav@gmail.com
