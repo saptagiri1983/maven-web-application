@@ -1,0 +1,51 @@
+pipeline {
+agent any
+tools{
+    maven 'maven-3.8.1'
+}
+stages{
+   
+    stage('checkout')
+    {
+        steps {
+       git branch: '$Branch', credentialsId: 'e8c72af6-db99-45c4-b52e-488c74844178', url: 'https://github.com/saptagiri1983/maven-web-application.git'
+        }
+    }
+   
+    stage('build')
+     {
+         steps {
+       sh "mvn clean package"
+         }
+     }
+     
+   stage('Deploy To  Tomcat') {
+   parallel {
+     stage("production"){
+      when { expression { params.Environments == "production"}}
+        steps { 
+             sshagent(['233ec832-dec4-41db-b77e-52ce10895586']) {sh 'scp -o StrictHostKeyChecking=no target/maven-web-application.war ec2-user@52.66.82.129:/opt/apache-tomcat-9.0.52/webapps/maven-web-application01-production/maven-web-application01-production'}
+           }
+        } 
+     stage("Development"){
+       when { expression { params.Environments == "Development"}}
+         steps {
+              sshagent(['233ec832-dec4-41db-b77e-52ce10895586']) {sh 'scp -o StrictHostKeyChecking=no target/maven-web-application.war ec2-user@52.66.82.129:/opt/apache-tomcat-9.0.52/webapps/maven-web-application01-development/maven-web-application01-Development'}
+             }
+          }
+     stage("Test"){
+       when { expression { params.Environments == "Test"}}
+         steps {
+              sshagent(['233ec832-dec4-41db-b77e-52ce10895586']) {sh 'scp -o StrictHostKeyChecking=no target/maven-web-application.war ec2-user@52.66.82.129:/opt/apache-tomcat-9.0.52/webapps/maven-web-application01-test/maven-web-application01-Test'}
+             }
+          }
+             
+         }
+        
+      
+     }
+             
+         }
+    
+     }
+    
